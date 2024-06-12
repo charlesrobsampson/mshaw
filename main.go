@@ -30,14 +30,14 @@ func main() {
 		spitShav()
 	} else {
 		switch args[0] {
-		case "ls":
+		case "ls", "list":
 			shavBytes, err := json.MarshalIndent(shavianJson, "", "  ")
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
 			fmt.Println(string(shavBytes))
-		case "f":
+		case "f", "find":
 			args = args[1:]
 			if len(args) < 2 {
 				fmt.Println("shaw f [name|code] <value>")
@@ -63,10 +63,10 @@ func main() {
 			} else {
 				fmt.Println("no shavian found for", args[1])
 			}
-		case "help":
-			fmt.Println("shaw [ls|help]")
+		case "h", "help":
+			fmt.Println("shaw ([list|find|help])")
 		default:
-			fmt.Println("shaw [ls|help]")
+			fmt.Println("shaw ([list|find|help])")
 		}
 	}
 
