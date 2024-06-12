@@ -16,6 +16,8 @@ type (
 		Letter string `json:"letter"`
 		Name   string `json:"name"`
 		Code   string `json:"code"`
+		Sound  string `json:"sound"`
+		Type   string `json:"type"`
 	}
 
 	Shavian map[string]letter
