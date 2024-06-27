@@ -83,6 +83,7 @@ func main() {
 			}
 			printShavianTable(letters)
 		case "u", "unicode":
+			fmt.Println("unicode prefix: U+104")
 			letters := []letter{}
 			err := json.Unmarshal(shavianJson, &letters)
 			if err != nil {
