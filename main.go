@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
+	"text/tabwriter"
 
 	"golang.design/x/clipboard"
 )
@@ -29,6 +31,13 @@ var shavianJson json.RawMessage
 func main() {
 	args := os.Args[1:]
 	if len(args) == 0 {
+		letters := []letter{}
+		err := json.Unmarshal(shavianJson, &letters)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		printCodeTable(letters)
 		spitShav()
 	} else {
 		switch args[0] {
@@ -65,6 +74,22 @@ func main() {
 			} else {
 				fmt.Println("no shavian found for", args[1])
 			}
+		case "t", "table":
+			letters := []letter{}
+			err := json.Unmarshal(shavianJson, &letters)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+			printShavianTable(letters)
+		case "u", "unicode":
+			letters := []letter{}
+			err := json.Unmarshal(shavianJson, &letters)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+			printCodeTable(letters)
 		case "h", "help":
 			fmt.Println("shaw ([list|find|help])")
 		default:
@@ -170,4 +195,48 @@ func breakIntoTwoCharStrings(word string) []string {
 		}
 	}
 	return result
+}
+
+func printShavianTable(shav []letter) {
+	sort.Slice(shav, func(i, j int) bool {
+		return shav[i].Code < shav[j].Code
+	})
+	// Initialize tabwriter with os.Stdout as the output, along with some formatting options
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.AlignRight)
+	fmt.Fprintln(w, "Letter\tName\tSound\tCode\tType\t") // The header
+	fmt.Fprintln(w, "------\t----\t-----\t----\t----\t") // Header underline
+
+	for _, letter := range shav {
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t\n", letter.Letter, letter.Name, letter.Sound, letter.Code, letter.Type)
+	}
+
+	w.Flush() // Flush writes to the underlying io.Writer
+}
+
+func printCodeTable(shav []letter) {
+	sort.Slice(shav, func(i, j int) bool {
+		return shav[i].Code < shav[j].Code
+	})
+
+	codes := map[string]map[string]string{
+		"5": {},
+		"6": {},
+		"7": {},
+	}
+	for _, letter := range shav {
+		parts := strings.Split(letter.Code, "")
+		codes[parts[0]][parts[1]] = letter.Letter
+	}
+
+	// Initialize tabwriter with os.Stdout as the output, along with some formatting options
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.AlignRight)
+	fmt.Fprintln(w, " \t 0\t 1\t 2\t 3\t 4\t 5\t 6\t 7\t 8\t 9\t A\t B\t C\t D\t E\t F\t") // The header
+	fmt.Fprintln(w, " \t -\t -\t -\t -\t -\t -\t -\t -\t -\t -\t -\t -\t -\t -\t -\t -\t") // Header underline
+
+	fmt.Fprintf(w, "5\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n", codes["5"]["0"], codes["5"]["1"], codes["5"]["2"], codes["5"]["3"], codes["5"]["4"], codes["5"]["5"], codes["5"]["6"], codes["5"]["7"], codes["5"]["8"], codes["5"]["9"], codes["5"]["A"], codes["5"]["B"], codes["5"]["C"], codes["5"]["D"], codes["5"]["E"], codes["5"]["F"])
+	fmt.Fprintf(w, "6\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n", codes["6"]["0"], codes["6"]["1"], codes["6"]["2"], codes["6"]["3"], codes["6"]["4"], codes["6"]["5"], codes["6"]["6"], codes["6"]["7"], codes["6"]["8"], codes["6"]["9"], codes["6"]["A"], codes["6"]["B"], codes["6"]["C"], codes["6"]["D"], codes["6"]["E"], codes["6"]["F"])
+	fmt.Fprintf(w, "7\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n", codes["7"]["0"], codes["7"]["1"], codes["7"]["2"], codes["7"]["3"], codes["7"]["4"], codes["7"]["5"], codes["7"]["6"], codes["7"]["7"], codes["7"]["8"], codes["7"]["9"], codes["7"]["A"], codes["7"]["B"], codes["7"]["C"], codes["7"]["D"], codes["7"]["E"], codes["7"]["F"])
+	fmt.Println()
+
+	w.Flush() // Flush writes to the underlying io.Writer
 }
