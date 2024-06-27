@@ -120,7 +120,6 @@ func spitShav() {
 	}
 	fmt.Println()
 	fmt.Println(outstring)
-	fmt.Println("copied to clipboard")
 }
 
 func getMultiLine(prompt string) []string {
