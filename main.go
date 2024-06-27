@@ -9,8 +9,6 @@ import (
 	"sort"
 	"strings"
 	"text/tabwriter"
-
-	"golang.design/x/clipboard"
 )
 
 type (
@@ -120,11 +118,6 @@ func spitShav() {
 		}
 		outstring += "\n"
 	}
-	err := clipboard.Init()
-	if err != nil {
-		panic(err)
-	}
-	clipboard.Write(clipboard.FmtText, []byte(outstring))
 	fmt.Println()
 	fmt.Println(outstring)
 	fmt.Println("copied to clipboard")
